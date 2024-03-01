@@ -1,7 +1,6 @@
 #the page processing helper functions
 
 import re
-from collections import namedtuple
 
 def MapCourIDData(aWebSocPage):
     CourseNumTextPat = re.compile(r"^(\d{5})(?:.*) +(\w+)$")
