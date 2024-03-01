@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 
+#pyvirtual display
+from pyvirtualdisplay import Display
+
 # dependency for the chrome driver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -15,6 +18,8 @@ from selenium.common.exceptions import NoSuchElementException
 import re
 from collections import defaultdict
 
+RASBERRYCHROMEDRIVERLOCATION = Service('/usr/bin/chromedriver')
+
 # global vars
 submmitbuttonclassname = "banner-width"
 
@@ -23,8 +28,12 @@ submmitbuttonclassname = "banner-width"
 class WebDriver:
     # the init function
     def __init__(self, agivenurl, givenoptions = None):
+        #set pyvirtual display
+        display = Display(visible=0, size=(1600, 1200))
+        display.start()
+
         # set up the driver from selenium
-        self.driver = webdriver.Chrome(options=givenoptions)
+        self.driver = webdriver.Chrome(service=RASBERRYCHROMEDRIVERLOCATION,options=givenoptions)
         self.baseurl = agivenurl
 
     def getselectvalues(self, anametofind) -> list:
