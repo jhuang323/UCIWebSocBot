@@ -24,7 +24,7 @@ class WebDriver:
     # the init function
     def __init__(self, agivenurl, givenoptions = None):
         # set up the driver from selenium
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Chrome(options=givenoptions)
         self.baseurl = agivenurl
 
     def getselectvalues(self, anametofind) -> list:
