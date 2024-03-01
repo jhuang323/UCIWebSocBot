@@ -10,7 +10,10 @@ from difflib import Differ
 from datetime import datetime
 
 import corefnclass
+import PageProcessHelper
 
+#define BASE URL
+BASEURL = "https://www.reg.uci.edu/perl/WebSoc"
 #define discord webhook
 discord = Discord(url="https://discord.com/api/webhooks/1212292461611847690/L9WHALL5g8ArkD2L0uJ3vWz912Kk1WsbXDO0Cq25jeNgaQNfJOqc3BNIc-mhnh1i-x7I")
 #Sleep between setting
@@ -27,6 +30,13 @@ CourseIDNameMap = {34330 : "cs175",
                    36100:"informatics 131",
                    34350:"cs179",
                    34220 : "CS147"}
+
+
+CourStorFileName = 'Coursedetails.json'
+#set to current term or target term
+aselectboxvaluedict = {
+    "YearTerm": "2024-14"
+}
 
 class bcolors:
     HEADER = '\033[95m'
@@ -68,35 +78,11 @@ def get_indexes_of_additions(s1, s2):
 
 
 
-def main(name):
-
-
-    # discord.post(content="Hello, world.") #for sending a discord message
-
-    #options test
-    chrome_options = webdriver.ChromeOptions()
-
-    # chrome_options.add_argument("headless") #to make this headless
-    chrome_options.add_argument("disable-extensions")
-    chrome_options.add_argument("disable-popup-blocking")
-    chrome_options.page_load_strategy = 'eager'
-
-    ### This blocks images and javascript requests
-    chrome_prefs = {
-        "profile.default_content_setting_values": {
-            "images": 2,
-            "javascript": 2,
-        }
-    }
-    chrome_options.experimental_options["prefs"] = chrome_prefs
-
-    aucisocdriver = corefnclass.WebDriver("https://www.reg.uci.edu/perl/WebSoc",chrome_options)
+def main():
 
 
 
-    # for agivendept in theallalldeptlist:
-
-    CourStorFileName = 'Coursedetails.json'
+    aucisocdriver = corefnclass.WebDriver(BASEURL)
 
 
     while(True):
@@ -107,76 +93,106 @@ def main(name):
 
         check_file = os.path.isfile(CourStorFileName)
 
+        PrevStoreDict = dict()
+
         if check_file is False:
             with open(CourStorFileName, "w") as outfile:
                 json.dump(dict(), outfile)
 
+        else:
+            #load json
+            with open(CourStorFileName) as f:
+                PrevStoreDict = json.load(f)
+                print(PrevStoreDict)
 
 
-
-
-        #load json
-        with open(CourStorFileName) as f:
-            PrevStoreDict = json.load(f)
-            print(PrevStoreDict)
-
-
-
-        # test the function
-        aselectboxvaluedict = {"YearTerm": "2024-14"}
 
         StoreDict = dict()
         DiffDetectBool = False
         DiffDiscordStr = ""
 
+
         for aDeptName,acourseIdList in CourseIdSearchMap.items():
             print(aDeptName,acourseIdList)
             aselectboxvaluedict["Dept"] = aDeptName
 
+            TargetCIds = CourseIdSearchMap[aDeptName]
+
 
             asocpagetext = aucisocdriver.getSocpage(aselectboxvaluedict)
 
-            PageTableList = asocpagetext.split('\n')
+            CoursesInfoDict = PageProcessHelper.MapCourIDData(asocpagetext)
+
+            for aCID in TargetCIds:
+                TargetCidStr = str(aCID)
+
+                StoreDict[TargetCidStr] = CoursesInfoDict[TargetCidStr]
+
+                print(f"Course: {CourseIDNameMap[aCID]}")
+                print(CoursesInfoDict[TargetCidStr][1])
+
+                if TargetCidStr in PrevStoreDict and PrevStoreDict[TargetCidStr][1] != CoursesInfoDict[TargetCidStr][1]:
+                    prevLine = PrevStoreDict[TargetCidStr][1]
+                    NewLine = CoursesInfoDict[TargetCidStr][1]
+
+                    print(f"{bcolors.WARNING}diff detected{bcolors.ENDC}")
+
+                    addition_idxs = get_indexes_of_additions(NewLine, prevLine)
+                    hl_sentence2 = highlight_string_at_idxs(prevLine, addition_idxs)
+                    print(hl_sentence2)
+
+                    DiffDiscordStr += f"Course: {CourseIDNameMap[aCID]} Status: {CoursesInfoDict[TargetCidStr][0]}\n"
+                    DiffDiscordStr += f"{NewLine}\n\n"
+
+                    DiffDetectBool = True
+
+
+
+
+
+            # print(StoreDict)
+
+            # PageTableList = list(filter(bool,[str.strip() for str in asocpagetext.splitlines()]))
             # print(PageTableList)
 
 
-            for anumind,aline in enumerate(PageTableList):
+            # for anumind,aline in enumerate(PageTableList):
+            #
+            #
+            #         coursidinLineList = aline.split()
+            #
+            #         if len(coursidinLineList) > 0:
+            #             try:
+            #                 CleanedLine = aline.strip()
+            #                 aPotCourseNum = int(coursidinLineList[0])
+            #
+            #
+            #                 if aPotCourseNum in acourseIdList:
+            #                     StoreDict[aPotCourseNum] = CleanedLine
+            #                     print(CourseIDNameMap[aPotCourseNum])
+            #                     print(CleanedLine)
+            #
+            #                     #check for differences
+            #                     if str(aPotCourseNum) in PrevStoreDict and CleanedLine != PrevStoreDict[str(aPotCourseNum)]:
+            #                         DiffDetectBool = True
+            #
+            #                         print(f"{bcolors.WARNING}diff detected{bcolors.ENDC}")
+            #                         addition_idxs = get_indexes_of_additions(CleanedLine, PrevStoreDict[str(aPotCourseNum)])
+            #                         hl_sentence2 = highlight_string_at_idxs(PrevStoreDict[str(aPotCourseNum)], addition_idxs)
+            #                         print(hl_sentence2)
+            #
+            #                         DiffDiscordStr += f"Course: {CourseIDNameMap[aPotCourseNum]}\n"
+            #                         DiffDiscordStr += f"{CleanedLine}\n\n"
+            #
+            #
+            #
+            #
+            #                     print()
+            #
+            #             except ValueError:
+            #                 pass
 
-
-                    coursidinLineList = aline.split()
-
-                    if len(coursidinLineList) > 0:
-                        try:
-                            CleanedLine = aline.strip()
-                            aPotCourseNum = int(coursidinLineList[0])
-
-
-                            if aPotCourseNum in acourseIdList:
-                                StoreDict[aPotCourseNum] = CleanedLine
-                                print(CourseIDNameMap[aPotCourseNum])
-                                print(CleanedLine)
-
-                                #check for differences
-                                if str(aPotCourseNum) in PrevStoreDict and CleanedLine != PrevStoreDict[str(aPotCourseNum)]:
-                                    DiffDetectBool = True
-
-                                    print(f"{bcolors.WARNING}diff detected{bcolors.ENDC}")
-                                    addition_idxs = get_indexes_of_additions(CleanedLine, PrevStoreDict[str(aPotCourseNum)])
-                                    hl_sentence2 = highlight_string_at_idxs(PrevStoreDict[str(aPotCourseNum)], addition_idxs)
-                                    print(hl_sentence2)
-
-                                    DiffDiscordStr += f"Course: {CourseIDNameMap[aPotCourseNum]}\n"
-                                    DiffDiscordStr += f"{CleanedLine}\n\n"
-
-
-
-
-                                print()
-
-                        except ValueError:
-                            pass
-
-        #send a discord notification
+        # send a discord notification
         if DiffDetectBool:
             # discord notificatoin
             discord.post(content=f"Difference detected Summary! {StartingTime} :\n"
@@ -506,6 +522,6 @@ def main(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    main('PyCharm')
+    main()
 
 

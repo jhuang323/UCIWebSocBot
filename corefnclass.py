@@ -24,11 +24,28 @@ RASBERRYCHROMEDRIVERLOCATION = ChromeService('/usr/bin/chromedriver')
 # global vars
 submmitbuttonclassname = "banner-width"
 
+#define chrome options
+#options test
+chrome_options = webdriver.ChromeOptions()
+
+# chrome_options.add_argument("headless") #to make this headless
+chrome_options.add_argument("disable-extensions")
+chrome_options.add_argument("disable-popup-blocking")
+chrome_options.page_load_strategy = 'eager'
+
+### This blocks images and javascript requests
+chrome_prefs = {
+    "profile.default_content_setting_values": {
+        "images": 2,
+        "javascript": 2,
+    }
+}
+chrome_options.experimental_options["prefs"] = chrome_prefs
 
 # my webdriver class
 class WebDriver:
     # the init function
-    def __init__(self, agivenurl, givenoptions = None):
+    def __init__(self, agivenurl):
 
         print()
 
@@ -36,7 +53,7 @@ class WebDriver:
 
         if platform.system() == 'Windows':
             # set up the driver from selenium
-            self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=givenoptions)
+            self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
         else:
 
@@ -45,7 +62,7 @@ class WebDriver:
             display.start()
 
             # set up the driver from selenium
-            self.driver = webdriver.Chrome(service=RASBERRYCHROMEDRIVERLOCATION,options=givenoptions)
+            self.driver = webdriver.Chrome(service=RASBERRYCHROMEDRIVERLOCATION,options=chrome_options)
         self.baseurl = agivenurl
 
     def getselectvalues(self, anametofind) -> list:
