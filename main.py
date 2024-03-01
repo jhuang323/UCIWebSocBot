@@ -76,7 +76,7 @@ def main(name):
     #options test
     chrome_options = webdriver.ChromeOptions()
 
-    chrome_options.add_argument("headless") #to make this headless
+    # chrome_options.add_argument("headless") #to make this headless
     chrome_options.add_argument("disable-extensions")
     chrome_options.add_argument("disable-popup-blocking")
     chrome_options.page_load_strategy = 'eager'
