@@ -14,7 +14,7 @@ import PageProcessHelper
 #define BASE URL
 BASEURL = "https://www.reg.uci.edu/perl/WebSoc"
 #define discord webhook
-discord = Discord(url="https://discord.com/api/webhooks/1212292461611847690/L9WHALL5g8ArkD2L0uJ3vWz912Kk1WsbXDO0Cq25jeNgaQNfJOqc3BNIc-mhnh1i-x7I")
+discord = Discord(url="https://discord.com/api/webhooks/1213403052359557180/yziw1PU6-tZWGzxoOvm5QO_MXdoHET8dJaCcN9H59xDOEx031tjJ3YLEY4eA_z7wL8UR")
 #Sleep between setting
 SLEEPSECONDS = 10800 #3hrs
 
