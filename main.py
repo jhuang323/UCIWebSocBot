@@ -52,8 +52,8 @@ class bcolors:
 # Return string with the escape sequences at specific indexes to highlight
 def highlight_string_at_idxs(string, indexes):
     # hl = "\x1b[38;5;160m"  # 8-bit
-    hl = "\x1b[91m"
-    reset = "\x1b[0m"
+    hl = "\u001b[0;31m"
+    reset = "\u001b[0;0m"
     words_with_hl = []
     for string_idx, word in enumerate(string.split(" ")):
         if string_idx in indexes:
@@ -140,8 +140,17 @@ def main():
                 hl_sentence2 = highlight_string_at_idxs(prevLine, addition_idxs)
                 print(hl_sentence2)
 
+
                 DiffDiscordStr += f"Course: {CourseIDNameMap[aCID]} Status: {CoursesInfoDict[TargetCidStr][0]}\n"
-                DiffDiscordStr += f"{NewLine}\n\n"
+                DiffDiscordStr += (f"Previous:\n"
+                                   f"```ansi\n"
+                                   f"{NewLine}"
+                                   f"```"
+                                   f"\n\n")
+                DiffDiscordStr += (f"Difference:\n")
+                DiffDiscordStr += (f"```ansi\n"
+                                   f"{hl_sentence2}"
+                                   f"```")
 
                 DiffDetectBool = True
 
