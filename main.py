@@ -128,7 +128,7 @@ def main():
             StoreDict[TargetCidStr] = CoursesInfoDict[TargetCidStr]
 
             print(f"Course: {CourseIDNameMap[aCID]}")
-            print(CoursesInfoDict[TargetCidStr][1])
+
 
             if TargetCidStr in PrevStoreDict and PrevStoreDict[TargetCidStr][1] != CoursesInfoDict[TargetCidStr][1]:
                 prevLine = PrevStoreDict[TargetCidStr][1]
@@ -139,18 +139,22 @@ def main():
                 addition_idxs = get_indexes_of_additions(NewLine, prevLine)
                 hl_sentence2 = highlight_string_at_idxs(prevLine, addition_idxs)
                 print(hl_sentence2)
+                print(CoursesInfoDict[TargetCidStr][1])
 
 
                 DiffDiscordStr += f"Course: {CourseIDNameMap[aCID]} Status: {CoursesInfoDict[TargetCidStr][0]}\n"
                 DiffDiscordStr += (f"Previous:\n"
-                                   f"```ansi\n"
-                                   f"{NewLine}"
-                                   f"```"
-                                   f"\n\n")
+                                    f"```ansi\n"
+                                    f"{hl_sentence2}"
+                                    f"```"
+                                    )
                 DiffDiscordStr += (f"Difference:\n")
                 DiffDiscordStr += (f"```ansi\n"
-                                   f"{hl_sentence2}"
-                                   f"```")
+                                    f"{NewLine}"
+                                    f"```"
+                                    f"\n\n")
+
+
 
                 DiffDetectBool = True
 
