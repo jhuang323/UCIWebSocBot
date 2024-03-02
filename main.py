@@ -133,16 +133,27 @@ def main():
             if TargetCidStr in PrevStoreDict and PrevStoreDict[TargetCidStr][1] != CoursesInfoDict[TargetCidStr][1]:
                 prevLine = PrevStoreDict[TargetCidStr][1]
                 NewLine = CoursesInfoDict[TargetCidStr][1]
+                CourseStatusStr = CoursesInfoDict[TargetCidStr][0]
+
+                if "open" == CourseStatusStr.lower():
+                    CourseStatusStr = "\u001b[1;32m" + CourseStatusStr + "\u001b[0;0m"
+                else:
+                    CourseStatusStr = "\u001b[4;31;40m" + CourseStatusStr + "\u001b[0;0m"
+
 
                 print(f"{bcolors.WARNING}diff detected{bcolors.ENDC}")
 
                 addition_idxs = get_indexes_of_additions(NewLine, prevLine)
                 hl_sentence2 = highlight_string_at_idxs(prevLine, addition_idxs)
                 print(hl_sentence2)
-                print(CoursesInfoDict[TargetCidStr][1])
+                print(NewLine)
 
 
-                DiffDiscordStr += f"Course: {CourseIDNameMap[aCID]} Status: {CoursesInfoDict[TargetCidStr][0]}\n"
+
+
+                DiffDiscordStr += (f"```ansi\n"
+                                   f"Course: {CourseIDNameMap[aCID]} Status: {CourseStatusStr}\n"
+                                   f"```")
                 DiffDiscordStr += (f"Previous:\n"
                                     f"```ansi\n"
                                     f"{hl_sentence2}"
