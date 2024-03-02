@@ -136,9 +136,9 @@ def main():
                 CourseStatusStr = CoursesInfoDict[TargetCidStr][0]
 
                 if "open" == CourseStatusStr.lower():
-                    CourseStatusStr = "\u001b[1;32m" + CourseStatusStr + "\u001b[0;0m"
+                    CourseStatusStr = "\u001b[1;40;32m" + CourseStatusStr + "\u001b[0;0m"
                 else:
-                    CourseStatusStr = "\u001b[4;31;40m" + CourseStatusStr + "\u001b[0;0m"
+                    CourseStatusStr = "\u001b[4;47;31m" + CourseStatusStr + "\u001b[0;0m"
 
 
                 print(f"{bcolors.WARNING}diff detected{bcolors.ENDC}")
