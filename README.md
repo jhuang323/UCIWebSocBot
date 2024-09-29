@@ -1,0 +1,1 @@
+A Web scraper designed to retrieve updates on class availability and to send a discord notification upon changes. Uses Selenium web browser with Undetectable browser with timeouts to mimic human interaction.
